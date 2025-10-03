@@ -1,4 +1,4 @@
-const API = "http://localhost:5000";
+const API = " https://hackathon-78xd.onrender.com";
 const rolesContainer = document.getElementById("rolesContainer");
 const results = document.getElementById("results");
 
@@ -242,3 +242,4 @@ document.addEventListener("keypress", function (e) {
 });
 
 updateProgress(1);
+
