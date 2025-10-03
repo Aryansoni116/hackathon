@@ -1,0 +1,54 @@
+{
+  "sql": [
+    { "title": "SQLBolt Interactive Lessons", "url": "https://sqlbolt.com/" },
+    { "title": "Mode Analytics SQL Tutorial", "url": "https://mode.com/sql-tutorial/" }
+  ],
+  "pandas": [
+    { "title": "Pandas Tutorial (freeCodeCamp)", "url": "https://www.youtube.com/watch?v=vmEHCJofslg" },
+    { "title": "Pandas Official Documentation", "url": "https://pandas.pydata.org/docs/" }
+  ],
+  "html": [
+    { "title": "MDN HTML Guide", "url": "https://developer.mozilla.org/en-US/docs/Learn/HTML" },
+    { "title": "W3Schools HTML Tutorial", "url": "https://www.w3schools.com/html/" }
+  ],
+  "css": [
+    { "title": "MDN CSS Guide", "url": "https://developer.mozilla.org/en-US/docs/Learn/CSS" },
+    { "title": "CSS Tricks", "url": "https://css-tricks.com/" }
+  ],
+  "javascript": [
+    { "title": "JavaScript.info", "url": "https://javascript.info/" },
+    { "title": "MDN JavaScript Guide", "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide" }
+  ],
+  "python": [
+    { "title": "Automate the Boring Stuff with Python", "url": "https://automatetheboringstuff.com/" },
+    { "title": "Python Official Documentation", "url": "https://docs.python.org/3/tutorial/" }
+  ],
+  "machine learning": [
+    { "title": "Coursera Machine Learning Specialization by Andrew Ng", "url": "https://www.coursera.org/specializations/machine-learning" },
+    { "title": "Scikit-Learn Documentation", "url": "https://scikit-learn.org/stable/user_guide.html" }
+  ],
+  "data science": [
+    { "title": "Kaggle Learn Data Science", "url": "https://www.kaggle.com/learn" },
+    { "title": "Data Science Handbook", "url": "https://jakevdp.github.io/PythonDataScienceHandbook/" }
+  ],
+  "react": [
+    { "title": "React Official Documentation", "url": "https://react.dev/" },
+    { "title": "FreeCodeCamp React Tutorial", "url": "https://www.freecodecamp.org/news/learn-react-by-building-a-simple-app/" }
+  ],
+  "node.js": [
+    { "title": "Node.js Official Documentation", "url": "https://nodejs.org/en/docs/" },
+    { "title": "W3Schools Node.js Tutorial", "url": "https://www.w3schools.com/nodejs/" }
+  ],
+  "git": [
+    { "title": "Pro Git Book", "url": "https://git-scm.com/book/en/v2" },
+    { "title": "GitHub Learning Lab", "url": "https://lab.github.com/" }
+  ],
+  "docker": [
+    { "title": "Docker Official Docs", "url": "https://docs.docker.com/get-started/" },
+    { "title": "Play with Docker", "url": "https://labs.play-with-docker.com/" }
+  ],
+  "cloud": [
+    { "title": "AWS Free Tier Training", "url": "https://aws.amazon.com/training/" },
+    { "title": "Google Cloud Skills Boost", "url": "https://www.cloudskillsboost.google/" }
+  ]
+}

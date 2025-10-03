@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Career Mentor</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <h1><i class="fas fa-robot"></i> AI Career Mentor</h1>
+
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+      <div class="progress-step active">1</div>
+      <div class="progress-step">2</div>
+      <div class="progress-step">3</div>
+      <div class="progress-step">4</div>
+      <div class="progress-step">5</div>
+      <div class="progress-step">6</div>
+    </div>
+
+    <section class="card" id="stepForm">
+      <div id="step1" class="form-step">
+        <label for="name"><i class="fas fa-user"></i> Name</label>
+        <input type="text" id="name" placeholder="Enter your full name" />
+        <button class="btn" onclick="nextStep(1)">Next <i class="fas fa-arrow-right"></i></button>
+      </div>
+
+      <div id="step2" class="form-step hidden">
+        <label for="email"><i class="fas fa-envelope"></i> Email</label>
+        <input type="email" id="email" placeholder="Enter your email address" />
+        <button class="btn" onclick="nextStep(2)">Next <i class="fas fa-arrow-right"></i></button>
+      </div>
+
+      <div id="step3" class="form-step hidden">
+        <label for="education"><i class="fas fa-graduation-cap"></i> Education</label>
+        <input type="text" id="education" placeholder="Your degree or course" />
+        <button class="btn" onclick="nextStep(3)">Next <i class="fas fa-arrow-right"></i></button>
+      </div>
+
+      <div id="step4" class="form-step hidden">
+        <label for="skills"><i class="fas fa-tools"></i> Skills</label>
+        <input type="text" id="skills" placeholder="Python, SQL, HTML, etc." />
+        <button class="btn" onclick="nextStep(4)">Next <i class="fas fa-arrow-right"></i></button>
+      </div>
+
+      <div id="step5" class="form-step hidden">
+        <label for="projects"><i class="fas fa-project-diagram"></i> Projects</label>
+        <textarea id="projects" placeholder="Describe your key projects and experience" rows="4"></textarea>
+        <button class="btn" onclick="nextStep(5)">Next <i class="fas fa-arrow-right"></i></button>
+      </div>
+
+      <div id="step6" class="form-step hidden">
+        <label for="interests"><i class="fas fa-heart"></i> Career Interests</label>
+        <input type="text" id="interests" placeholder="AI, Web Development, Data Science, etc." />
+        <button class="btn" onclick="submitProfile()">Get Recommendations <i class="fas fa-rocket"></i></button>
+      </div>
+    </section>
+
+    <section id="results" class="card hidden fade-in">
+      <div class="results-header">
+        <h2>Your AI Career Path</h2>
+        <p>Based on your profile, here are your top career matches:</p>
+      </div>
+      <div id="rolesContainer"></div>
+      <button class="btn" onclick="restartProcess()"><i class="fas fa-redo"></i> Start Over</button>
+    </section>
+  </div>
+
+  <div class="ai-assistant">
+    <i class="fas fa-robot"></i>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

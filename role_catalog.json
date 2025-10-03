@@ -1,0 +1,7 @@
+{
+  "Frontend Developer": ["html", "css", "javascript", "react"],
+  "Backend Developer": ["python", "flask", "django", "node", "sql"],
+  "Data Analyst": ["python", "sql", "pandas", "numpy"],
+  "ML Engineer": ["python", "ml", "tensorflow", "pandas", "numpy"],
+  "Full Stack Developer": ["html", "css", "javascript", "react", "python", "flask", "sql"]
+}
