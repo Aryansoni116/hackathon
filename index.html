@@ -69,8 +69,29 @@
     </section>
   </div>
 
+  <!-- AI Assistant Button -->
   <div class="ai-assistant">
     <i class="fas fa-robot"></i>
+  </div>
+
+  <!-- Chatbot Widget -->
+  <div id="chatbot" class="chatbot hidden">
+    <div class="chat-header">
+      <i class="fas fa-robot"></i> AI Career Assistant
+      <span class="close-btn">&times;</span>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="ai">
+        <p>Hello! I'm your AI career assistant. How can I help you with your career journey today?</p>
+      </div>
+    </div>
+    <div class="chat-input">
+      <input type="text" id="chatInput" placeholder="Ask me about careers, skills, or jobs...">
+      <button id="sendMessage"><i class="fas fa-paper-plane"></i></button>
+    </div>
+    <div class="typing-indicator" id="typingIndicator">
+      <i class="fas fa-ellipsis-h"></i> AI is typing...
+    </div>
   </div>
 
   <script src="app.js"></script>
