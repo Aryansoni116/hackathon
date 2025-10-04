@@ -1,6 +1,15 @@
-const API = " https://hackathon-78xd.onrender.com";
+const API = "https://hackathon-78xd.onrender.com";
 const rolesContainer = document.getElementById("rolesContainer");
 const results = document.getElementById("results");
+
+// Chatbot elements
+const chatbot = document.getElementById('chatbot');
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const sendMessageBtn = document.getElementById('sendMessage');
+const closeChatBtn = document.querySelector('.close-btn');
+const aiAssistantBtn = document.querySelector('.ai-assistant');
+const typingIndicator = document.getElementById('typingIndicator');
 
 window.onload = () => {
   document.getElementById("name").value = "Aryan Soni";
@@ -112,7 +121,7 @@ Interests: ${interests.join(", ")}
     displayResults(data.roles, data.profile_summary);
   } catch (err) {
     console.error("Error analyzing profile:", err);
-    alert(" Failed to analyze profile. Make sure backend is running on http://localhost:5000");
+    alert("Failed to analyze profile. Please try again.");
   } finally {
     showLoading(false);
   }
@@ -230,6 +239,116 @@ function restartProcess() {
   document.getElementById("interests").value = "";
 }
 
+// === Chatbot functionality ===
+
+// Toggle chatbot visibility
+aiAssistantBtn.addEventListener('click', () => {
+  chatbot.classList.toggle('hidden');
+  if (!chatbot.classList.contains('hidden')) {
+    chatInput.focus();
+  }
+});
+
+closeChatBtn.addEventListener('click', () => {
+  chatbot.classList.add('hidden');
+});
+
+// Send message when button is clicked
+sendMessageBtn.addEventListener('click', sendMessage);
+
+// Send message when Enter key is pressed
+chatInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    sendMessage();
+  }
+});
+
+// Add message to chat
+function addMessageToChat(message, sender) {
+  const messageDiv = document.createElement('div');
+  messageDiv.className = sender;
+  
+  const messageP = document.createElement('p');
+  messageP.textContent = message;
+  
+  messageDiv.appendChild(messageP);
+  chatMessages.appendChild(messageDiv);
+  
+  // Scroll to bottom
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Show typing indicator
+function showTypingIndicator() {
+  typingIndicator.classList.add('show');
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Hide typing indicator
+function hideTypingIndicator() {
+  typingIndicator.classList.remove('show');
+}
+
+// Send message to backend
+async function sendMessage() {
+  const message = chatInput.value.trim();
+  if (!message) return;
+
+  // Add user message to chat
+  addMessageToChat(message, 'user');
+  chatInput.value = '';
+  
+  // Show typing indicator
+  showTypingIndicator();
+  
+  try {
+    const response = await fetch(`${API}/chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message: message })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    // Hide typing indicator
+    hideTypingIndicator();
+    
+    // Add AI response to chat
+    if (data.reply) {
+      addMessageToChat(data.reply, 'ai');
+    } else if (data.error) {
+      addMessageToChat(`Error: ${data.error}`, 'ai');
+    } else {
+      addMessageToChat("I'm sorry, I couldn't process your request. Please try again.", 'ai');
+    }
+  } catch (error) {
+    console.error('Error sending message:', error);
+    hideTypingIndicator();
+    addMessageToChat("Sorry, I'm having trouble connecting to the chat service. Please make sure the backend server is running and try again.", 'ai');
+  }
+}
+
+// Test backend connection on load
+async function testBackendConnection() {
+  try {
+    const response = await fetch(`${API}/health`);
+    if (response.ok) {
+      console.log('✅ Backend connection successful');
+    } else {
+      console.log('❌ Backend connection failed');
+    }
+  } catch (error) {
+    console.log('❌ Backend connection failed:', error);
+  }
+}
+
+// Initialize
 document.addEventListener("keypress", function (e) {
   if (e.key === "Enter") {
     const visibleStep = document.querySelector(".form-step:not(.hidden)");
@@ -239,6 +358,11 @@ document.addEventListener("keypress", function (e) {
       else submitProfile();
     }
   }
+});
+
+// Test connection when page loads
+window.addEventListener('load', () => {
+  testBackendConnection();
 });
 
 updateProgress(1);
