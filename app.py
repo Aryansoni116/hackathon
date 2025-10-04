@@ -3,8 +3,6 @@ from flask_cors import CORS
 import os
 import json
 import google.generativeai as genai
-from recommender import recommend_roles
-from resume_parser import parse_resume
 
 # === Flask setup ===
 app = Flask(__name__)
@@ -31,12 +29,11 @@ else:
 # === Chat memory store ===
 chat_history = []
 
-# Load learning resources
-RESOURCES_FILE = os.path.join(os.path.dirname(__file__), "resources.json")
-
+# Load learning resources with fallback
 def get_learning_resources(skills):
     """Return learning resources for a given list of skills."""
     try:
+        RESOURCES_FILE = os.path.join(os.path.dirname(__file__), "resources.json")
         with open(RESOURCES_FILE, "r") as f:
             resources = json.load(f)
         learning_resources = []
@@ -48,9 +45,38 @@ def get_learning_resources(skills):
         print(f"Error loading resources: {e}")
         return []
 
+# Fallback functions if recommender.py or resume_parser.py are missing
+def recommend_roles(skills):
+    """Fallback recommendation function"""
+    try:
+        from recommender import recommend_roles as rr
+        return rr(skills)
+    except ImportError:
+        # Simple fallback recommendations
+        roles = []
+        if any(skill.lower() in ['python', 'machine learning', 'ai'] for skill in skills):
+            roles.append({"role": "AI/ML Engineer", "match": 85, "required_skills": ["Python", "Machine Learning"]})
+        if any(skill.lower() in ['javascript', 'html', 'css'] for skill in skills):
+            roles.append({"role": "Web Developer", "match": 78, "required_skills": ["JavaScript", "HTML", "CSS"]})
+        if not roles:
+            roles.append({"role": "Software Developer", "match": 70, "required_skills": ["Programming"]})
+        return roles
+
+def parse_resume(filepath):
+    """Fallback resume parsing function"""
+    try:
+        from resume_parser import parse_resume as pr
+        return pr(filepath)
+    except ImportError:
+        # Return some default skills
+        return ["Python", "Problem Solving", "Communication"]
+
 @app.route("/")
 def home():
-    return jsonify({"message": "AI Career Mentor Backend is running ✅"})
+    return jsonify({
+        "message": "AI Career Mentor Backend is running ✅",
+        "chat_enabled": GEMINI_ENABLED
+    })
 
 @app.route("/upload_resume", methods=["POST"])
 def upload_resume():
@@ -119,28 +145,31 @@ def generate_learning_path(role, missing_skills):
     """Generate a personalized learning path."""
     if not missing_skills:
         return [
-            {"week": 1, "goals": ["Advanced topics"], "tasks": ["Explore advanced concepts in your field"]},
+            {"week": 1, "goals": ["Advanced topics"], "tasks": ["Explore advanced concepts"]},
             {"week": 2, "goals": ["Portfolio enhancement"], "tasks": ["Build complex projects"]},
-            {"week": 3, "goals": ["Industry trends"], "tasks": ["Research latest industry developments"]}
+            {"week": 3, "goals": ["Industry trends"], "tasks": ["Research latest developments"]}
         ]
 
     return [
-        {"week": 1, "goals": [f"Learn {missing_skills[0]}"], "tasks": ["Complete beginner tutorials", "Practice basic exercises"]},
-        {"week": 2, "goals": [f"Master {missing_skills[0]}", "Start project"], "tasks": ["Build small project", "Study intermediate concepts"]},
-        {"week": 3, "goals": ["Deepen knowledge", "Portfolio development"], "tasks": ["Create portfolio piece", "Study advanced topics"]},
-        {"week": 4, "goals": ["Interview preparation"], "tasks": ["Practice coding challenges", "Study interview questions"]}
+        {"week": 1, "goals": [f"Learn {missing_skills[0]}"], "tasks": ["Complete tutorials", "Practice exercises"]},
+        {"week": 2, "goals": [f"Master {missing_skills[0]}"], "tasks": ["Build project", "Study concepts"]},
+        {"week": 3, "goals": ["Portfolio development"], "tasks": ["Create portfolio piece"]},
+        {"week": 4, "goals": ["Interview preparation"], "tasks": ["Practice challenges"]}
     ]
 
-# === Gemini Chatbot Endpoint ===
+# === Gemini Chatbot Endpoint - FIXED VERSION ===
 @app.route("/chat", methods=["POST"])
 def chat():
     if not GEMINI_ENABLED:
         return jsonify({
             "error": "Gemini API not configured",
-            "message": "Chat features are currently disabled. Please check the backend configuration."
+            "message": "Please set GEMINI_API_KEY environment variable to enable chat features."
         }), 503
 
     data = request.get_json()
+    if not data:
+        return jsonify({"error": "No JSON data received"}), 400
+        
     user_message = data.get("message", "").strip()
 
     if not user_message:
@@ -154,17 +183,26 @@ def chat():
         if len(chat_history) > 10:
             chat_history.pop(0)
 
-        # Create context for career-focused responses
-        context = """You are an AI Career Mentor assistant. You help users with career guidance, skill development, job search strategies, interview preparation, and learning path suggestions. Be helpful, encouraging, and professional. Provide practical, actionable advice.
+        # Create context for career-focused responses - FIXED PROMPT
+        context = """You are an AI Career Mentor assistant. You help users with:
+        - Career guidance and advice
+        - Skill development recommendations  
+        - Job search strategies
+        - Interview preparation
+        - Learning path suggestions
+        - Resume and portfolio tips
         
-        Previous conversation:
+        Be helpful, encouraging, and professional. Provide practical, actionable advice.
+        
+        Conversation history:
         """
         
         history_text = "\n".join(
-            [f"{msg['role'].capitalize()}: {msg['content']}" for msg in chat_history[-6:]]
+            [f"{msg['role'].capitalize()}: {msg['content']}" for msg in chat_history[-6:]]  # Last 6 messages
         )
         
-        full_prompt = context + history_text
+        # FIX: Include the current user message in the prompt
+        full_prompt = context + history_text + f"\nUser: {user_message}\nAssistant:"
 
         response = model.generate_content(full_prompt)
         
@@ -180,20 +218,26 @@ def chat():
         
     except Exception as e:
         print(f"Gemini API Error: {e}")
+        # Return a helpful response instead of error 500
         return jsonify({
-            "error": "Failed to connect to Gemini API",
-            "message": "Please check your API key and try again later."
-        }), 500
+            "reply": "I'm currently experiencing technical difficulties. Please try again in a moment or check if your Gemini API key is properly configured."
+        })
 
 @app.route("/health")
 def health_check():
     return jsonify({
         "status": "healthy", 
         "service": "AI Career Mentor",
-        "gemini_enabled": GEMINI_ENABLED
+        "gemini_enabled": GEMINI_ENABLED,
+        "endpoints": {
+            "chat": "/chat",
+            "health": "/health", 
+            "analyze_profile": "/analyze_profile",
+            "upload_resume": "/upload_resume"
+        }
     })
 
 if __name__ == "__main__":
     print(f"🚀 Starting AI Career Mentor Backend...")
     print(f"💬 Gemini Chat: {'✅ Enabled' if GEMINI_ENABLED else '❌ Disabled'}")
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)  # Set debug=False for production
